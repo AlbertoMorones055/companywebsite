@@ -8,7 +8,7 @@ const contactFromEmail =
   process.env.CONTACT_FROM_EMAIL || "Servicios Falcon <onboarding@resend.dev>";
 
 function escapeHtml(value) {
-  return value
+  return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
@@ -50,44 +50,34 @@ function buildHtmlEmail({ nombre, telefono, correo, tipo, mensaje }) {
   `;
 }
 
-function jsonResponse(body, status = 200) {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-    },
-  });
+function getPayload(req) {
+  if (!req.body) return {};
+  if (typeof req.body === "string") {
+    try {
+      return JSON.parse(req.body);
+    } catch {
+      return {};
+    }
+  }
+  return req.body;
 }
 
-export default async function handler(request) {
-  if (request.method !== "POST") {
-    return jsonResponse({ success: false, message: "Method not allowed." }, 405);
+export default async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      success: false,
+      message: "Method not allowed.",
+    });
   }
 
   if (!resendApiKey) {
-    return jsonResponse(
-      {
-        success: false,
-        message: "RESEND_API_KEY no esta configurada en Vercel.",
-      },
-      500,
-    );
+    return res.status(500).json({
+      success: false,
+      message: "RESEND_API_KEY no esta configurada en Vercel.",
+    });
   }
 
-  let payload;
-
-  try {
-    payload = await request.json();
-  } catch {
-    return jsonResponse(
-      {
-        success: false,
-        message: "No se pudo leer la solicitud.",
-      },
-      400,
-    );
-  }
-
+  const payload = getPayload(req);
   const nombre = payload?.nombre?.trim() || "";
   const telefono = payload?.telefono?.trim() || "";
   const correo = payload?.correo?.trim() || "";
@@ -95,23 +85,17 @@ export default async function handler(request) {
   const mensaje = payload?.mensaje?.trim() || "";
 
   if (!nombre || !telefono || !correo || !tipo || !mensaje) {
-    return jsonResponse(
-      {
-        success: false,
-        message: "Completa todos los campos antes de continuar.",
-      },
-      400,
-    );
+    return res.status(400).json({
+      success: false,
+      message: "Completa todos los campos antes de continuar.",
+    });
   }
 
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
-    return jsonResponse(
-      {
-        success: false,
-        message: "Escribe un correo valido para continuar.",
-      },
-      400,
-    );
+    return res.status(400).json({
+      success: false,
+      message: "Escribe un correo valido para continuar.",
+    });
   }
 
   try {
@@ -132,26 +116,23 @@ export default async function handler(request) {
     });
 
     if (emailResult?.error) {
-      return jsonResponse(
-        {
-          success: false,
-          message: emailResult.error.message || "No se pudo enviar el correo.",
-        },
-        502,
-      );
+      return res.status(502).json({
+        success: false,
+        message: emailResult.error.message || "No se pudo enviar el correo.",
+      });
     }
 
-    return jsonResponse({ success: true, id: emailResult?.data?.id || null });
+    return res.status(200).json({
+      success: true,
+      id: emailResult?.data?.id || null,
+    });
   } catch (error) {
-    return jsonResponse(
-      {
-        success: false,
-        message:
-          error instanceof Error
-            ? error.message
-            : "No se pudo procesar la solicitud.",
-      },
-      500,
-    );
+    return res.status(500).json({
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "No se pudo procesar la solicitud.",
+    });
   }
 }
