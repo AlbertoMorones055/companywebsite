@@ -172,17 +172,6 @@ function ContactSection({
               </span>
               <span>{isSubmitting ? "Enviando..." : "Enviar por correo"}</span>
             </button>
-            <button
-              className="btn contact-whatsapp-btn"
-              type="button"
-              disabled={isSubmitting}
-              onClick={onWhatsApp}
-            >
-              <span className="contact-action-btn-icon" aria-hidden="true">
-                <img src="/assets/projects/whatsIcono.png" alt="" />
-              </span>
-              <span>Enviar por WhatsApp</span>
-            </button>
           </div>
           <p
             className={`form-feedback ${feedbackType}`.trim()}
@@ -198,4 +187,3 @@ function ContactSection({
 }
 
 export default React.memo(ContactSection);
-

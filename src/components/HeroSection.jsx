@@ -1,17 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
+import useMediaQuery from "../hooks/useMediaQuery.js";
 
 const HERO_FALLBACK_IMAGE = "/assets/projects/remodelaciones1.5.webp";
-const HERO_FALLBACK_IMAGE_MOBILE = "/assets/projects/remodelaciones1.5-mobile.webp";
+const HERO_FALLBACK_IMAGE_MOBILE =
+  "/assets/projects/remodelaciones1.5-mobile.webp";
 const HERO_VIDEO_DESKTOP = "/assets/videos/videoHero-ios.mp4";
 const HERO_VIDEO_MOBILE = "/assets/videos/videoHero-mobile-10s.mp4";
 const HERO_VIDEO_START_TIME_DESKTOP = 8;
 const HERO_VIDEO_START_TIME_MOBILE = 0;
+const HERO_WHATSAPP_HREF =
+  "https://wa.me/523310893265?text=Hola%2C%20quiero%20informaci%C3%B3n%20sobre%20sus%20servicios.";
 
-function HeroSection({ onMediaReady }) {
+function HeroSection({ onMediaReady, onQuoteRequest }) {
   const videoRef = useRef(null);
+  const idleTimerRef = useRef(0);
   const [videoReady, setVideoReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const isMobileViewport = useMediaQuery("(max-width: 768px)");
   const fallbackImage = isMobileViewport
     ? HERO_FALLBACK_IMAGE_MOBILE
     : HERO_FALLBACK_IMAGE;
@@ -30,19 +36,18 @@ function HeroSection({ onMediaReady }) {
   }, [onMediaReady, videoFailed, videoReady]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    setShouldLoadVideo(false);
 
-    function handleViewportChange(event) {
-      setIsMobileViewport(event.matches);
-    }
+    idleTimerRef.current = window.setTimeout(() => {
+      setShouldLoadVideo(true);
+    }, isMobileViewport ? 120 : 260);
 
-    handleViewportChange(mediaQuery);
-    mediaQuery.addEventListener("change", handleViewportChange);
-
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
+    return () => window.clearTimeout(idleTimerRef.current);
+  }, [isMobileViewport]);
 
   useEffect(() => {
+    if (!shouldLoadVideo) return undefined;
+
     const video = videoRef.current;
 
     if (!video) return undefined;
@@ -105,8 +110,6 @@ function HeroSection({ onMediaReady }) {
       seekThenPlay();
     };
 
-    video.load();
-
     if (video.readyState >= 1) {
       seekThenPlay();
     } else {
@@ -123,7 +126,7 @@ function HeroSection({ onMediaReady }) {
       video.removeEventListener("loadedmetadata", seekThenPlay);
       video.removeEventListener("ended", handleEnded);
     };
-  }, [startTime]);
+  }, [shouldLoadVideo, startTime]);
 
   return (
     <section className="hero section-dark">
@@ -136,29 +139,31 @@ function HeroSection({ onMediaReady }) {
           style={{ backgroundImage: `url(${fallbackImage})` }}
         ></div>
 
-        <video
-          ref={videoRef}
-          className="hero-video"
-          autoPlay
-          muted
-          loop={false}
-          playsInline
-          preload="auto"
-          poster={fallbackImage}
-          onLoadStart={() => {
-            setVideoReady(false);
-            setVideoFailed(false);
-          }}
-          onPlaying={() => {
-            if (videoRef.current?.currentTime >= startTime - 0.25) {
-              setVideoReady(true);
-            }
-            setVideoFailed(false);
-          }}
-          onError={() => setVideoFailed(true)}
-        >
-          <source src={videoSource} type="video/mp4" />
-        </video>
+        {shouldLoadVideo ? (
+          <video
+            ref={videoRef}
+            className="hero-video"
+            autoPlay
+            muted
+            loop={false}
+            playsInline
+            preload="metadata"
+            poster={fallbackImage}
+            onLoadStart={() => {
+              setVideoReady(false);
+              setVideoFailed(false);
+            }}
+            onPlaying={() => {
+              if (videoRef.current?.currentTime >= startTime - 0.25) {
+                setVideoReady(true);
+              }
+              setVideoFailed(false);
+            }}
+            onError={() => setVideoFailed(true)}
+          >
+            <source src={videoSource} type="video/mp4" />
+          </video>
+        ) : null}
 
         <div className="hero-video-overlay"></div>
         <div className="hero-video-gradient"></div>
@@ -179,21 +184,45 @@ function HeroSection({ onMediaReady }) {
       <div className="container hero-shell">
         <div className="hero-copy reveal">
           <h1 className="animate-delay-1">
-            Haz que tu espacio refleje calidad desde el primer vistazo. <br />
+            Remodelación, mantenimiento e imagen comercial para hogares y
+            negocios.
           </h1>
 
           <div className="hero-divider" aria-hidden="true"></div>
 
-          <span className="hero-badge animate-delay-2">
-            Más de 17 años de experiencia en proyectos comerciales y
-            residenciales.
-          </span>
+          <p className="hero-subtitle animate-delay-2">
+            Ayudamos a empresas y clientes particulares a mejorar, adaptar y
+            mantener sus espacios con atención profesional, experiencia y
+            respuesta rápida en Guadalajara y zona metropolitana.
+          </p>
+
           <div className="hero-actions">
             <a
               className="btn btn-primary hero-primary-btn animate-delay-3"
               href="#contacto"
+              onClick={onQuoteRequest}
             >
               Solicitar cotización
+            </a>
+            <a
+              className="btn btn-outline hero-secondary-btn animate-delay-3"
+              href="#proyectos"
+            >
+              <span>Ver proyectos</span>
+              <span className="hero-btn-arrow" aria-hidden="true">
+                {"->"}
+              </span>
+            </a>
+            <a
+              className="btn btn-ghost hero-contact-btn animate-delay-3"
+              href={HERO_WHATSAPP_HREF}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span className="hero-whatsapp-icon" aria-hidden="true">
+                <img src="/assets/projects/whatsIcono.png" alt="" />
+              </span>
+              <span>WhatsApp directo</span>
             </a>
           </div>
         </div>

@@ -26,7 +26,7 @@ const aboutStats = [
   { value: "300+", label: "servicios realizados" },
 ];
 
-function AboutSection() {
+function AboutSection({ onQuoteRequest }) {
   return (
     <section className="section about-section" id="nosotros">
       <div className="container about-wrapper">
@@ -36,8 +36,8 @@ function AboutSection() {
           </div>
           <div className="about-heading-line" aria-hidden="true"></div>
           <p className="about-subtitle">
-            <span>Transformamos espacios</span> con experiencia, calidad y
-            confianza.
+            Ayudamos a hogares y negocios con{" "}
+            <span>remodelación, mantenimiento e imagen comercial.</span>
           </p>
         </div>
 
@@ -70,19 +70,20 @@ function AboutSection() {
 
           <div className="about-content-card">
             <span className="about-kicker">
-              Soluciones con criterio técnico y visual{" "}
+              ATENCIÓN PARA HOGARES Y NEGOCIOS{" "}
             </span>
 
-            <h3>Un equipo que cuida el resultado y también el proceso.</h3>
+            <h3>Un solo equipo para mejorar, mantener y renovar tu espacio.</h3>
 
             <p className="about-content-copy">
               Combinamos remodelación, mantenimiento e imagen comercial para
-              mejorar hogares, negocios y espacios comerciales con una ejecución
-              clara, ordenada y pensada para durar.
+              ayudar a hogares y negocios a mejorar su funcionalidad,
+              presentación y estado general con una ejecución clara, ordenada y
+              profesional.
             </p>
 
             <div className="about-trust-note">
-              <strong>Un mismo equipo, menos fricción.</strong>
+              <strong>Un mismo equipo, más orden y seguimiento.</strong>
               <p>Coordinación más simple, mejor seguimiento y menos vueltas.</p>
             </div>
 
@@ -99,6 +100,16 @@ function AboutSection() {
                 </article>
               ))}
             </div>
+
+            <div className="about-actions">
+              <a
+                className="btn btn-primary hero-primary-btn about-cta-btn"
+                href="#contacto"
+                onClick={onQuoteRequest}
+              >
+                Solicitar cotización
+              </a>
+            </div>
           </div>
         </div>
       </div>
@@ -107,4 +118,3 @@ function AboutSection() {
 }
 
 export default React.memo(AboutSection);
-

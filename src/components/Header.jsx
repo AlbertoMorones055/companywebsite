@@ -1,8 +1,9 @@
-﻿import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import useMediaQuery from "../hooks/useMediaQuery.js";
 
-const HEADER_OFFSET_FALLBACK = 0;
-const HEADER_ANCHOR_SPACING_DESKTOP = 0;
-const HEADER_ANCHOR_SPACING_MOBILE = 0;
+const HEADER_OFFSET_FALLBACK = 110;
+const HEADER_ANCHOR_SPACING_DESKTOP = 16;
+const HEADER_ANCHOR_SPACING_MOBILE = 18;
 
 const navLinks = [
   {
@@ -52,11 +53,11 @@ const navLinks = [
   },
 ];
 
-function Header({ menuOpen, setMenuOpen }) {
+function Header({ menuOpen, onQuoteRequest, setMenuOpen }) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const headerRef = useRef(null);
+  const isMobileViewport = useMediaQuery("(max-width: 920px)");
 
   useEffect(() => {
     function handleScroll() {
@@ -72,26 +73,16 @@ function Header({ menuOpen, setMenuOpen }) {
   }, [isMobileViewport, menuOpen]);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 920px)");
-
-    function handleViewportChange(event) {
-      setIsMobileViewport(event.matches);
-    }
-
-    handleViewportChange(mediaQuery);
-    mediaQuery.addEventListener("change", handleViewportChange);
-
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
-
-  useEffect(() => {
     const root = document.documentElement;
 
     function updateHeaderOffset() {
       const spacing = isMobileViewport
         ? HEADER_ANCHOR_SPACING_MOBILE
         : HEADER_ANCHOR_SPACING_DESKTOP;
-      const nextOffset = spacing || HEADER_OFFSET_FALLBACK;
+      const measuredHeight = headerRef.current?.getBoundingClientRect().height;
+      const nextOffset =
+        (Number.isFinite(measuredHeight) ? measuredHeight : 0) + spacing ||
+        HEADER_OFFSET_FALLBACK;
 
       root.style.setProperty("--header-offset", `${nextOffset}px`);
     }
@@ -218,7 +209,11 @@ function Header({ menuOpen, setMenuOpen }) {
                 className="btn btn-primary header-cta"
                 href="#contacto"
                 tabIndex={isMobileViewport && !menuOpen ? -1 : 0}
-                onClick={(event) => handleAnchorNavigation(event, "#contacto")}
+                onClick={(event) => {
+                  setIsHeaderVisible(true);
+                  setMenuOpen(false);
+                  onQuoteRequest?.(event);
+                }}
               >
                 <span className="header-cta-icon" aria-hidden="true">
                   <svg viewBox="0 0 24 24">
@@ -244,4 +239,3 @@ function Header({ menuOpen, setMenuOpen }) {
 }
 
 export default React.memo(Header);
-

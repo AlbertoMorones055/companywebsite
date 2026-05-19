@@ -1,11 +1,13 @@
 ﻿import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import AboutSection from "./components/AboutSection.jsx";
+import BenefitsSection from "./components/BenefitsSection.jsx";
 import Collaborators from "./components/Collaborators.jsx";
 import Footer from "./components/Footer.jsx";
 import Header from "./components/Header.jsx";
 import HeroSection from "./components/HeroSection.jsx";
 const Lightbox = lazy(() => import("./components/Lightbox.jsx"));
 import ServicesSection from "./components/ServicesSection.jsx";
+import WorkingProcessSection from "./components/WorkingProcessSection.jsx";
 const ProjectsSection = lazy(() => import("./components/ProjectsSection.jsx"));
 const TestimonialsSection = lazy(() =>
   import("./components/TestimonialsSection.jsx"),
@@ -15,6 +17,7 @@ const ContactSection = lazy(() => import("./components/ContactSection.jsx"));
 import { faqs, projects, services } from "./data/siteData.js";
 import useBodyScrollLock from "./hooks/useBodyScrollLock.js";
 import useEscapeKey from "./hooks/useEscapeKey.js";
+import useMediaQuery from "./hooks/useMediaQuery.js";
 import useRevealOnScroll from "./hooks/useRevealOnScroll.js";
 
 const initialFormValues = {
@@ -39,12 +42,20 @@ function normalizeFormValues(values) {
 
 function DeferredSection({
   children,
+  forceLoad = false,
   minHeight = 0,
   rootMargin = "320px 0px",
   sectionId,
 }) {
   const [shouldLoad, setShouldLoad] = useState(false);
   const sectionRef = useRef(null);
+
+  useEffect(() => {
+    if (!forceLoad) return undefined;
+
+    setShouldLoad(true);
+    return undefined;
+  }, [forceLoad]);
 
   useEffect(() => {
     if (shouldLoad) return undefined;
@@ -97,36 +108,25 @@ function App() {
   const [openFaq, setOpenFaq] = useState(null);
   const [lightbox, setLightbox] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [isIntroVisible, setIsIntroVisible] = useState(true);
   const [isHeroMediaReady, setIsHeroMediaReady] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [feedbackType, setFeedbackType] = useState("");
   const [formValues, setFormValues] = useState(initialFormValues);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [shouldLoadContact, setShouldLoadContact] = useState(false);
+  const [contactScrollRequest, setContactScrollRequest] = useState(0);
   const lightboxTriggerRef = useRef(null);
   const introStartRef = useRef(Date.now());
+  const isMobileViewport = useMediaQuery("(max-width: 768px)");
   const year = new Date().getFullYear();
 
-  useBodyScrollLock(menuOpen || lightbox || isIntroVisible);
+  useBodyScrollLock(menuOpen || lightbox);
   useRevealOnScroll();
   useEscapeKey(() => {
     setMenuOpen(false);
     setLightbox(null);
   });
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 768px)");
-
-    function handleViewportChange(event) {
-      setIsMobileViewport(event.matches);
-    }
-
-    handleViewportChange(mediaQuery);
-    mediaQuery.addEventListener("change", handleViewportChange);
-
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
 
   useEffect(() => {
     if (!isMobileViewport) return;
@@ -139,7 +139,7 @@ function App() {
 
     const maxWaitTimer = window.setTimeout(() => {
       setIsIntroVisible(false);
-    }, 2400);
+    }, 900);
 
     return () => window.clearTimeout(maxWaitTimer);
   }, [isIntroVisible]);
@@ -148,13 +148,41 @@ function App() {
     if (!isIntroVisible || !isHeroMediaReady) return undefined;
 
     const elapsed = Date.now() - introStartRef.current;
-    const remaining = Math.max(750 - elapsed, 0);
+    const remaining = Math.max(280 - elapsed, 0);
     const revealTimer = window.setTimeout(() => {
       setIsIntroVisible(false);
     }, remaining);
 
     return () => window.clearTimeout(revealTimer);
   }, [isHeroMediaReady, isIntroVisible]);
+
+  useEffect(() => {
+    if (!contactScrollRequest) return undefined;
+
+    let attempts = 0;
+    let timerId = 0;
+
+    const scrollToContactForm = () => {
+      const contactForm = document.getElementById("contactForm");
+
+      if (contactForm) {
+        contactForm.scrollIntoView({ behavior: "smooth", block: "start" });
+        const firstField = contactForm.querySelector("input, select, textarea");
+        firstField?.focus({ preventScroll: true });
+        return;
+      }
+
+      attempts += 1;
+
+      if (attempts < 12) {
+        timerId = window.setTimeout(scrollToContactForm, 120);
+      }
+    };
+
+    scrollToContactForm();
+
+    return () => window.clearTimeout(timerId);
+  }, [contactScrollRequest]);
 
   function handleFormChange(event) {
     const { name, value } = event.target;
@@ -308,6 +336,13 @@ ${values.mensaje}`,
     setLightbox({ projectIndex, imageIndex });
   }
 
+  function handleHeroQuoteRequest(event) {
+    event.preventDefault();
+    setShouldLoadContact(true);
+    setContactScrollRequest((currentRequest) => currentRequest + 1);
+    window.history.replaceState(null, "", "#contacto");
+  }
+
   return (
     <>
       <div
@@ -327,12 +362,20 @@ ${values.mensaje}`,
         </div>
       </div>
 
-      <Header menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+      <Header
+        menuOpen={menuOpen}
+        onQuoteRequest={handleHeroQuoteRequest}
+        setMenuOpen={setMenuOpen}
+      />
 
       <main id="contenido">
-        <HeroSection onMediaReady={() => setIsHeroMediaReady(true)} />
-        <AboutSection />
+        <HeroSection
+          onMediaReady={() => setIsHeroMediaReady(true)}
+          onQuoteRequest={handleHeroQuoteRequest}
+        />
+        <AboutSection onQuoteRequest={handleHeroQuoteRequest} />
         <ServicesSection services={services} />
+        <BenefitsSection />
         <Collaborators />
         <DeferredSection sectionId="proyectos" minHeight={720}>
           <ProjectsSection
@@ -343,10 +386,15 @@ ${values.mensaje}`,
         <DeferredSection minHeight={420}>
           <TestimonialsSection />
         </DeferredSection>
+        <WorkingProcessSection />
         <DeferredSection sectionId="faq" minHeight={640}>
           <FaqSection faqs={faqs} openFaq={openFaq} setOpenFaq={setOpenFaq} />
         </DeferredSection>
-        <DeferredSection sectionId="contacto" minHeight={920}>
+        <DeferredSection
+          forceLoad={shouldLoadContact}
+          sectionId="contacto"
+          minHeight={920}
+        >
           <ContactSection
             feedback={feedback}
             feedbackType={feedbackType}

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import useMediaQuery from "../hooks/useMediaQuery.js";
 
 const testimonials = [
   {
@@ -22,9 +23,9 @@ const testimonials = [
 ];
 
 function TestimonialsSection() {
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const trackRef = useRef(null);
+  const isMobileViewport = useMediaQuery("(max-width: 920px)");
   const touchStateRef = useRef({
     startX: 0,
     startY: 0,
@@ -32,19 +33,6 @@ function TestimonialsSection() {
     lockedAxis: null,
     lastDeltaX: 0,
   });
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 920px)");
-
-    function handleViewportChange(event) {
-      setIsMobileViewport(event.matches);
-    }
-
-    handleViewportChange(mediaQuery);
-    mediaQuery.addEventListener("change", handleViewportChange);
-
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
 
   useEffect(() => {
     if (!isMobileViewport) {

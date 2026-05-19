@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import useMediaQuery from "../hooks/useMediaQuery.js";
 
 function preloadImageAsset(path) {
   const image = new Image();
@@ -8,10 +9,10 @@ function preloadImageAsset(path) {
 
 function ServicesSection({ services }) {
   const [expandedService, setExpandedService] = useState(null);
-  const [isMobileViewport, setIsMobileViewport] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
+  const isMobileViewport = useMediaQuery("(max-width: 920px)");
   const touchStateRef = useRef({
     startX: 0,
     startY: 0,
@@ -26,19 +27,6 @@ function ServicesSection({ services }) {
       currentTitle === serviceTitle ? null : serviceTitle,
     );
   };
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 920px)");
-
-    function handleViewportChange(event) {
-      setIsMobileViewport(event.matches);
-    }
-
-    handleViewportChange(mediaQuery);
-    mediaQuery.addEventListener("change", handleViewportChange);
-
-    return () => mediaQuery.removeEventListener("change", handleViewportChange);
-  }, []);
 
   useEffect(() => {
     if (!isMobileViewport) {
@@ -223,8 +211,8 @@ function ServicesSection({ services }) {
           </div>
           <div className="about-heading-line" aria-hidden="true"></div>
           <p className="about-subtitle">
-            <span>Soluciones claras</span> para mejorar tu espacio y su
-            funcionamiento.
+            <span>Servicios para hogares y negocios</span> que buscan mejorar su
+            espacio, su imagen y su funcionamiento.
           </p>
         </div>
 
@@ -329,6 +317,11 @@ function ServicesSection({ services }) {
                             ))}
                           </ul>
                         </div>
+
+                        <div className="services-card-detail-group">
+                          <h4>Ideal para:</h4>
+                          <p>{service.idealFor}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -337,7 +330,10 @@ function ServicesSection({ services }) {
             })}
           </div>
           {isMobileViewport ? (
-            <div className="services-carousel-dots" aria-label="Indicadores del carrusel de servicios">
+            <div
+              className="services-carousel-dots"
+              aria-label="Indicadores del carrusel de servicios"
+            >
               {visibleServices.map((service, index) => (
                 <button
                   key={service.title}

@@ -1,68 +1,68 @@
 ﻿export const services = [
   {
     title: "Remodelación y adecuaciones",
-    text: "Mejoramos y adaptamos espacios residenciales y comerciales para que sean más funcionales, atractivos y adecuados a cada necesidad.",
+    text: "Mejoramos y adaptamos espacios residenciales y comerciales para hacerlos más funcionales, atractivos y adecuados al uso de cada cliente.",
     image: "/assets/projects/remodelacionesFondo.webp",
     mobileImage: "/assets/projects/remodelacionesFondo-mobile.webp",
     applications: [
       "Remodelaciones en general",
-      "Adecuaciones y arquitectura",
-      "Apertura de locales",
-      "Mejoras de locales",
-      "Mejoras de fachadas",
+      "Adecuaciones interiores y arquitectura",
+      "Apertura y adaptación de locales",
+      "Mejoras funcionales y visuales",
+      "Renovación de fachadas",
     ],
     idealFor:
-      "Hogares, oficinas, negocios y locales que necesitan adaptar sus espacios para operar mejor y proyectar una mejor imagen.",
+      "Hogares, oficinas, negocios y locales que necesitan adaptar sus espacios para operar mejor, verse mejor y responder a nuevas necesidades.",
     icon: "/assets/projects/remodelaciones.png",
   },
   {
     title: "Pintura interior y exterior",
-    text: "Aplicación interior y exterior para renovar ambientes y elevar la presentación del inmueble.",
+    text: "Aplicamos pintura interior y exterior para renovar espacios, mejorar su presentación y mantener en mejor estado viviendas, negocios y propiedades.",
     image: "/assets/projects/pinturaFondo.jpg",
     mobileImage: "/assets/projects/pinturaFondo-mobile.webp",
     applications: [
       "Pintura interior",
       "Pintura exterior",
-      "Acabados comerciales",
       "Renovación visual de espacios",
+      "Acabados para hogares y negocios",
     ],
     idealFor:
-      "Casas, oficinas, negocios y propiedades que buscan refrescar su imagen y cuidar mejor sus espacios.",
+      "Casas, oficinas, locales y propiedades que buscan refrescar su imagen, mejorar su presentación y conservar mejor sus espacios.",
     icon: "/assets/projects/pintura.png",
   },
   {
     title: "Electricidad",
-    text: "Servicios eléctricos para proyectos residenciales, comerciales y de mantenimiento.",
+    text: "Realizamos trabajos eléctricos para espacios residenciales y comerciales, desde instalaciones hasta mantenimiento y correcciones puntuales.",
     image: "/assets/projects/electricidadFondo.webp",
     mobileImage: "/assets/projects/electricidadFondo-mobile.webp",
     applications: [
       "Instalaciones eléctricas",
       "Mantenimiento preventivo",
       "Mantenimiento correctivo",
-      "Soporte a locales y negocios",
+      "Soporte eléctrico para locales y negocios",
     ],
     idealFor:
-      "Propiedades, oficinas y negocios que requieren instalaciones confiables, mantenimiento continuo o correcciones puntuales.",
+      "Propiedades, oficinas y negocios que requieren instalaciones confiables, mantenimiento continuo o atención a fallas eléctricas.",
     icon: "/assets/projects/electricidad.png",
   },
   {
     title: "Mantenimiento general",
-    text: "Atención integral para conservar en buen estado hogares, negocios y espacios comerciales.",
+    text: "Atendemos trabajos de mantenimiento correctivo y preventivo para conservar hogares, negocios y espacios comerciales en buen estado operativo y visual.",
     image: "/assets/projects/mantenimientoFondo.webp",
     mobileImage: "/assets/projects/mantenimientoFondo-mobile.webp",
     applications: [
       "Ajustes y correcciones generales",
-      "Mejoras visuales en fachadas",
-      "Soporte para imagen comercial",
       "Mantenimiento en áreas de uso diario",
+      "Mejoras menores en fachadas y espacios visibles",
+      "Soporte para conservación de imagen comercial",
     ],
     idealFor:
-      "Empresas, negocios y propiedades que buscan conservar una buena presentación.",
+      "Empresas, negocios y propiedades que buscan conservar una buena presentación, prevenir deterioro y mantener sus espacios en mejores condiciones.",
     icon: "/assets/projects/mantenimiento.png",
   },
   {
     title: "Fachadas e imagen comercial",
-    text: "Mejoras visuales, fachadas y anuncios luminosos para proyectar una mejor imagen.",
+    text: "Desarrollamos mejoras visuales para negocios mediante fachadas, anuncios y elementos que ayudan a proyectar una imagen más profesional y atractiva.",
     image: "/assets/projects/anunciosFondo.webp",
     mobileImage: "/assets/projects/anunciosFondo-mobile.webp",
     applications: [
@@ -72,12 +72,12 @@
       "Actualización de imagen exterior",
     ],
     idealFor:
-      "Negocios, locales y empresas que necesitan destacar mejor su presencia hacia clientes y visitantes.",
+      "Negocios, locales y empresas que necesitan destacar mejor su presencia, reforzar su imagen y generar una mejor impresión ante clientes y visitantes.",
     icon: "/assets/projects/anuncios.png",
   },
   {
     title: "Planos, refrigeración y aire acondicionado",
-    text: "Apoyo técnico con planos e instalación de equipos de refrigeración y aire acondicionado.",
+    text: "Brindamos apoyo técnico con planos, instalación de equipos de refrigeración y aire acondicionado, así como mantenimiento para espacios que requieren mejor operación y control ambiental.",
     image: "/assets/projects/planosFondo.webp",
     mobileImage: "/assets/projects/planosFondo-mobile.webp",
     applications: [
@@ -87,7 +87,7 @@
       "Mantenimiento de equipos",
     ],
     idealFor:
-      "Negocios, oficinas y propiedades que necesitan respaldo técnico, climatización o soluciones de refrigeración para su operación diaria.",
+      "Negocios, oficinas y propiedades que necesitan respaldo técnico, climatización o soluciones de refrigeración para operar mejor en su día a día.",
     icon: "/assets/projects/planos.png",
     highlight: true,
   },
@@ -265,4 +265,3 @@ export const faqs = [
     "Podemos compartir información de la empresa, cotizaciones formales, evidencia de trabajos realizados y seguimiento directo durante el servicio. Además, según el proyecto, también podemos proporcionar datos fiscales, comprobantes, referencias de trabajos y documentación relacionada, para brindar mayor confianza al cliente desde el inicio.",
   ],
 ];
-
